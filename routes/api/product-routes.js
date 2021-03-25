@@ -21,6 +21,17 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
+  try {
+    const productData = await Product.findByPk(req.params.id, {
+      include: [{ model: Category, attributes: ['category_name'] }, { model: Tag, attributes: ['tag_name'] }]
+    })
+    if (!productData) {
+      res.status(404).json({ message: 'There are no products with this id.' })
+    }
+    res.status(200).json(productData)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 });
 
 // create new product
